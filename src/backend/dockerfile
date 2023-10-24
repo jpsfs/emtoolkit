@@ -1,0 +1,19 @@
+FROM node:latest as builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+FROM node:alpine as cli
+WORKDIR /app
+ENV NODE_ENV=production
+ENV OUTPUT_BASEPATH=/app/output
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/build ./
+CMD ["bin", "sh"]
+
+FROM builder as backend
+ENV NODE_ENV=production
+EXPOSE 3000
+CMD ["npm","start"]
