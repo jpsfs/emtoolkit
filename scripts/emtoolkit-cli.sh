@@ -24,4 +24,4 @@ fi
 
 # Load Environment Variables stored in the .env.emtoolkit-cli files
 # Run pass the arguments to the docker container
-docker run --interactive --tty --rm --env-file "$BASEDIR/.env.emtoolkit-cli" emtoolkit-cli index.js "$@"
+docker run --interactive --tty --rm -v $(pwd):/app/output --env-file "$BASEDIR/.env.emtoolkit-cli" emtoolkit-cli index.js "$@"

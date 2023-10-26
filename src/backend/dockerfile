@@ -8,7 +8,7 @@ RUN npm run build
 FROM node:alpine as cli
 WORKDIR /app
 ENV NODE_ENV=production
-ENV OUTPUT_BASEPATH=/app/output
+ENV OUTPUT_BASEPATH=/output
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/build ./
 CMD ["bin", "sh"]

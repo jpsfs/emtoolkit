@@ -12,7 +12,8 @@ Currently the tool is in it's infancy and provides only a small sub-set of featu
 To run the CLI:
 
 ```sh
-wget 
+curl -O https://raw.githubusercontent.com/jpsfs/emtoolkit/main/scripts/emtoolkit-cli.sh
+curl -O https://raw.githubusercontent.com/jpsfs/emtoolkit/main/scripts/.env.emtoolkit-cli
 ```
 
 To see commands available check the CLI `--help`.
