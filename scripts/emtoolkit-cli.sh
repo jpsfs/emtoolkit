@@ -22,6 +22,8 @@ if ! [ -f "$BASEDIR/.env.emtoolkit-cli" ]; then
   >&2 echo ".env.toolkit-cli file doesn't exist. Make sure it exists and has the needed env variables to run the CLI"
 fi
 
+echo "INFO: Base output directory is the terminal current working directory"
+
 # Load Environment Variables stored in the .env.emtoolkit-cli files
 # Run pass the arguments to the docker container
-docker run --interactive --tty --rm -v $(pwd):/app/output --env-file "$BASEDIR/.env.emtoolkit-cli" emtoolkit-cli index.js "$@"
+docker run --interactive --tty --rm -v $(pwd):/output --env-file "$BASEDIR/.env.emtoolkit-cli" emtoolkit-cli index.js "$@"
