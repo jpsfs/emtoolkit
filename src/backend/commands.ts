@@ -21,10 +21,6 @@ export class Commands {
 
         await yargs(hideBin(process.argv))
             .command(commands)
-            .command("*", "",  () => {
-                // If nothing else, run server
-
-            })
             .option("export", {
                 describe: "Output format",
                 choices: ["csv", "console"]

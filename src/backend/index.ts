@@ -1,12 +1,22 @@
+import { ILogObj, Logger } from "tslog";
 import iocContainer from "./ioc/inversify.config";
-import { Commands } from './commands';
+import { TYPES } from "./ioc/symbols";
+import * as emoji from "node-emoji";
 
-const commands = new Commands(iocContainer);
-commands.Run().then((result) => {
-  if (!result) {
-    // No command was run, boot server
+const logger = iocContainer.get<Logger<ILogObj>>(TYPES.Logger);
 
-  } else {
-    // Nothing do to, let the program finish
-  }
-});
+if (process.env.SERVER) {
+  logger.info(emoji.emojify(":information_source: Booting in :spider_web: Server mode"));
+
+  import("./server");
+
+} else {
+  logger.info(emoji.emojify(":information_source: Booting in :beetle: CLI mode"));
+
+  import('./commands').then(async (commandsModule) => {
+      const commands = new commandsModule.Commands(iocContainer);
+
+      await commands.Run()
+  });
+}
+

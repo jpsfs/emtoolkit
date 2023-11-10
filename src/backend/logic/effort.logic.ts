@@ -135,11 +135,11 @@ export class EffortLogic {
         for (const task of workBucket.tasks) {
 
             if (task.startedAt) {
-                minWorkBucketDate = Math.min(minWorkBucketDate, task.startedAt.getUTCMilliseconds());
+                minWorkBucketDate = Math.min(minWorkBucketDate, task.startedAt.getTime());
             }
 
             if (task.doneAt) {
-                maxWorkBucketDate = Math.max(maxWorkBucketDate, task.doneAt.getUTCMilliseconds());
+                maxWorkBucketDate = Math.max(maxWorkBucketDate, task.doneAt.getTime());
             }
 
             // If the task is not assigned to anyone, just continue
