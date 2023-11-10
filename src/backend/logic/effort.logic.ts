@@ -11,6 +11,9 @@ import { Holiday } from "../model/holiday.interface";
 import { EmployeeInformationIntegration } from "../integrations/interfaces/employeeIntegration.interface";
 import { Progress } from "../utils/interfaces/progress";
 
+const MIN_DATE = -8640000000000000;
+const MAX_DATE = 8640000000000000
+
 /**
  * Contains all relevant logic to make calculations regarding Work Buckets
  */
@@ -126,7 +129,7 @@ export class EffortLogic {
 
         // Now that we have all the work done with the specified conditions, let's fetch PTO for those involved
         
-        let minWorkBucketDate = 8640000000000000, maxWorkBucketDate = -8640000000000000;
+        let minWorkBucketDate = MAX_DATE, maxWorkBucketDate = MIN_DATE;
 
         // Let's get everyone that was involved in the work specified
         const employees: EmailMap<Employee> = new EmailMap(this.emailMatcher);
@@ -161,6 +164,15 @@ export class EffortLogic {
             }
             employeePoints += task.estimation == undefined ? 0: task.estimation;
             employeesPoints.set(task.assignedTo.email, employeePoints);
+
+            // Check if the current task start/end date should change the employee start/end task dates
+            if (task.startedAt) {
+                employee.tasksStartDate = new Date(Math.min(employee.tasksStartDate?.getTime() || MAX_DATE, task.startedAt.getTime()));
+            }
+
+            if (task.doneAt) {
+                employee.tasksEndDate = new Date(Math.max(employee.tasksEndDate?.getTime() || MIN_DATE, task.doneAt.getTime()));
+            }
 
             // Associate the task with the employee
             if (!employee.tasks) {
@@ -223,15 +235,25 @@ export class EffortLogic {
         // Calculate stats for each employee
         const employeeStats: EmployeeStats[] = [];
         for (const employee of employeesList) {
+            const employeeDateRange = {
+                start: employee.tasksStartDate || effectiveStartDate,
+                end: employee.tasksEndDate || effectiveEndDate
+            };
+
             const eCH = holidaysPerCountry.get(employee.country || Country.Undefined) || [];
-            const eWD = this.calculateEmployeeWorkingDays(employee, eCH, effectiveStartDate, effectiveEndDate);
+            const eWD = this.calculateEmployeeWorkingDays(
+                employee,
+                eCH,
+                employeeDateRange.start,
+                employeeDateRange.end
+            );
 
             const ePoints = employeesPoints.get(employee.email) || 0;
 
             employeeStats.push({
                 employee: employee,
                 workingDays: eWD,
-                dateRange: dateRange,
+                dateRange: employeeDateRange,
                 points: ePoints,
                 avgPointsPerWorkingDays: ePoints / eWD
             });

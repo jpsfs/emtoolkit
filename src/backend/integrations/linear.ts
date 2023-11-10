@@ -182,46 +182,42 @@ export class Linear implements WorkIntegration {
 
         const userEmployeeMap: Map<string, Employee> = new Map<string, Employee>();
 
-        while(true) {
+        while(issues.pageInfo.hasNextPage) {
+            issues = await issues.fetchNext();
+        }
 
-            for (const node of issues.nodes) {
+        for (const node of issues.nodes) {
 
-                const userId = node["_assignee"]?.id;
+            const userId = node["_assignee"]?.id;
 
-                let employee: Employee | undefined;
+            let employee: Employee | undefined;
 
-                if (userId) {
-                    employee = userEmployeeMap.get(userId);
+            if (userId) {
+                employee = userEmployeeMap.get(userId);
 
-                    if (!employee) {
-                        employee = {
-                            id: userId,
-                            email: ""
-                        };
+                if (!employee) {
+                    employee = {
+                        id: userId,
+                        email: ""
+                    };
 
-                        userEmployeeMap.set(userId, employee);
-                    }
+                    userEmployeeMap.set(userId, employee);
                 }
-
-                const task: Task = {
-                    id: node.id,
-                    title: node.title,
-                    estimation: node.estimate,
-                    createdAt: node.createdAt,
-                    startedAt: node.startedAt,
-                    doneAt: node.completedAt,
-                    assignedTo: employee
-                };
-
-                workBucket.tasks.push(task);
             }
 
-            if (issues.pageInfo.hasNextPage) {
-                issues = await issues.fetchNext();
-            } else {
-                break;
-            }
-        };
+            const task: Task = {
+                id: node.id,
+                title: node.title,
+                estimation: node.estimate,
+                createdAt: node.createdAt,
+                startedAt: node.startedAt,
+                doneAt: node.completedAt,
+                assignedTo: employee
+            };
+
+            workBucket.tasks.push(task);
+        }
+
 
         // Fetch Users from the collected Ids
         let linearUsers = await this.client.users({
@@ -232,21 +228,16 @@ export class Linear implements WorkIntegration {
             }
         });
 
-        while (true) {
+        while (linearUsers.pageInfo.hasNextPage) {
+            linearUsers = await linearUsers.fetchNext();
+        }
 
-            for (const user of linearUsers.nodes) {
-                const employee = userEmployeeMap.get(user.id);
+        for (const user of linearUsers.nodes) {
+            const employee = userEmployeeMap.get(user.id);
 
-                if (employee) {
-                    employee.email = user.email;
-                    employee.name = user.name;
-                }
-            }
-
-            if (linearUsers.pageInfo.hasNextPage) {
-                linearUsers = await linearUsers.fetchNext();
-            } else {
-                break;
+            if (employee) {
+                employee.email = user.email;
+                employee.name = user.name;
             }
         }
 

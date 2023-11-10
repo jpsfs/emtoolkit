@@ -34,6 +34,16 @@ export interface Employee {
      * Tasks
      */
     tasks?: Task[];
+
+    /**
+     * First date a task was started
+     */
+    tasksStartDate?: Date;
+
+    /**
+     * Last date a task was completed
+     */
+    tasksEndDate?: Date;
 }
 
 export interface EmployeeStats extends Stats{

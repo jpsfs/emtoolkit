@@ -40,7 +40,7 @@ export class CSV implements Output {
     private async EmployeesStats(employeeStats: EmployeeStats[], destinationFolder: string, filename?: string): Promise<void> {
 
         // EmployeeStats Format
-        // | ID | Name | Email | Country | Working Days | Points | AvgPointsPerWorkingDays |
+        // | ID | Name | Email | Country | Start Date | End Date| Working Days | Points | AvgPointsPerWorkingDays |
         
         // Prepare Data
         const data = employeeStats.map(eS => {
@@ -49,6 +49,8 @@ export class CSV implements Output {
                 eS.employee.name,
                 eS.employee.email,
                 eS.employee.country,
+                eS.dateRange.start,
+                eS.dateRange.end,
                 eS.workingDays,
                 eS.points,
                 eS.avgPointsPerWorkingDays
@@ -61,7 +63,7 @@ export class CSV implements Output {
             })
             .pipe(stringify({
                 header: true,
-                columns: ["ID", "Name", "Email", "Country", "Working Days", "Points", "AvgPointsPerWorkingDays"]
+                columns: ["ID", "Name", "Email", "Country", "Start Date", "End Date", "Working Days", "Points", "AvgPointsPerWorkingDays"]
             }))
             .pipe(createWriteStream(path.join(destinationFolder, filename || "employees.csv"), {
                 flags: "w+", 
