@@ -15,9 +15,19 @@ To run the CLI:
 curl -O https://raw.githubusercontent.com/jpsfs/emtoolkit/main/scripts/emtoolkit-cli.sh
 curl -O https://raw.githubusercontent.com/jpsfs/emtoolkit/main/scripts/.env.emtoolkit-cli
 ```
+Edit `.env.emtoolkit-cli` following the instructions on the comments inside the file.
+
+```sh
+sh ./scripts/emtoolkit.cli.sh [command] [option1] [option2]
+```
 
 To see commands available check the CLI `--help`.
 
+Example:
+
+```sh
+sh ./scripts/emtoolkit.cli.sh stats --workBucketURI team/[TeamName] --startDate [MM/DD/YYYY] --endDate [MM/DD/YYYY]
+```
 
 ## Features
 
